@@ -11,7 +11,4 @@ public class ActivityService {
         activities.put(date, activity);
     }
 
-    public String getActivity(LocalDate date) {
-        return activities.getOrDefault(date, "");
-    }
 }
