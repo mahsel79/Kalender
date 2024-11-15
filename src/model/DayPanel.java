@@ -45,11 +45,11 @@ public class DayPanel extends JPanel {
         add(eventPanel, BorderLayout.CENTER);
 
         // Bottom panel: "Add Event" label and Add button
-        JLabel addEventLabel = new JLabel("Add Event", SwingConstants.CENTER);
+        JLabel addEventLabel = new JLabel("Skapa Event", SwingConstants.CENTER);
         addEventLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         addEventLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
 
-        JButton addButton = new JButton("Add");
+        JButton addButton = new JButton("Skapa");
         addButton.addActionListener(e -> new EventDialog(
                 (JFrame) SwingUtilities.getWindowAncestor(this),
                 null,
@@ -58,7 +58,7 @@ public class DayPanel extends JPanel {
                 this::removeEvent
         ));
 
-        JPanel buttonPanel = new JPanel(new GridLayout(2, 1)); // Stack the label and button vertically
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1));
         buttonPanel.setOpaque(false);
         buttonPanel.add(addEventLabel);
         buttonPanel.add(addButton);
@@ -103,10 +103,11 @@ public class DayPanel extends JPanel {
     }
 
     private String formatEvent(EventDialog.Event event) {
-        return String.format("<html><b>Title:</b> %s<br><b>Time:</b> %s<br><b>Description:</b> %s</html>",
+        return String.format("<html><b>Title:</b> %s<br><b>Tid:</b> %s<br><b>Beskrivning:</b> %s</html>",
                 event.getTitle(), event.getTime(), event.getDescription());
     }
 
+    // Source:
     private String formatDate(LocalDate date) {
         return date.getDayOfMonth() + " " + date.getMonth().getDisplayName(TextStyle.FULL, new Locale("sv", "SE"));
     }

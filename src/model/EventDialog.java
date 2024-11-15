@@ -36,13 +36,13 @@ public class EventDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         addLabelAndField(panel, gbc, "Event Title:", eventTitleField, 0, 0);
-        addLabelAndField(panel, gbc, "Event Time (HH:mm):", timeSpinner, 0, 1);
-        addLabelAndField(panel, gbc, "Description:", new JScrollPane(eventDescriptionArea), 0, 2);
+        addLabelAndField(panel, gbc, "Tid (HH:mm):", timeSpinner, 0, 1);
+        addLabelAndField(panel, gbc, "Beskrivning:", new JScrollPane(eventDescriptionArea), 0, 2);
 
         JPanel buttonPanel = new JPanel();
-        JButton okButton = new JButton("OK");
-        JButton cancelButton = new JButton("Cancel");
-        JButton deleteButton = new JButton("Delete");
+        JButton okButton = new JButton("Spara");
+        JButton cancelButton = new JButton("Avbryt");
+        JButton deleteButton = new JButton("Radera");
 
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
@@ -69,7 +69,7 @@ public class EventDialog {
             ((JDialog) SwingUtilities.getWindowAncestor(panel)).dispose();
         });
 
-        JDialog dialog = new JDialog(parent, "Add/Edit Event", true);
+        JDialog dialog = new JDialog(parent, "Skapa/Redigera Event", true);
         dialog.setLayout(new BorderLayout());
         dialog.add(panel, BorderLayout.CENTER);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
