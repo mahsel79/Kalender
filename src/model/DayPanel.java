@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -142,49 +144,90 @@ public class DayPanel extends JPanel {
             eventDescriptionArea.setText(initialDescription);
         }
 
-        // Show dialog to enter event details
-        int option = JOptionPane.showConfirmDialog(this, panel, "Add Event", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            String newEventTitle = eventTitleField.getText();
-            String eventTime = timeEditor.getTextField().getText(); // Get the time value as a string
-            String eventDescription = eventDescriptionArea.getText();
+        // Show dialog with "OK", "Cancel", and "Delete" buttons
+        JPanel buttonPanel = new JPanel();
+        JButton okButton = new JButton("OK");
+        JButton cancelButton = new JButton("Cancel");
+        JButton deleteButton = new JButton("Delete");
 
-            // Validate the time (it should be in HH:mm format)
-            if (eventTime.matches("^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$")) {
-                String eventDetails = "<html><b>Title:</b> " + newEventTitle + "<br>" +
-                        "<b>Time:</b> " + eventTime + "<br>" +
-                        "<b>Description:</b> " + eventDescription + "</html>";
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
+        buttonPanel.add(deleteButton);
 
-                if (indexToEdit != -1) {
-                    // Update the existing event label with the new details
-                    JLabel eventLabel = (JLabel) eventPanel.getComponent(indexToEdit);
-                    eventLabel.setText(eventDetails);
-                    eventLabel.setToolTipText("Click to edit");
+        // Add action listeners for buttons
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String newEventTitle = eventTitleField.getText();
+                String eventTime = timeEditor.getTextField().getText(); // Get the time value as a string
+                String eventDescription = eventDescriptionArea.getText();
 
+                // Validate the time (it should be in HH:mm format)
+                if (eventTime.matches("^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$")) {
+                    String eventDetails = "<html><b>Title:</b> " + newEventTitle + "<br>" +
+                            "<b>Time:</b> " + eventTime + "<br>" +
+                            "<b>Description:</b> " + eventDescription + "</html>";
+
+                    if (indexToEdit != -1) {
+                        // Update the existing event label with the new details
+                        JLabel eventLabel = (JLabel) eventPanel.getComponent(indexToEdit);
+                        eventLabel.setText(eventDetails);
+                        eventLabel.setToolTipText("Click to edit");
+
+                    } else {
+                        // Create new event label if it's a new event
+                        JLabel eventLabel = new JLabel(eventDetails);
+                        eventLabel.setOpaque(true);
+                        eventLabel.setBackground(new Color(211, 151, 248));
+                        eventLabel.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));  // Add border around label
+                        eventLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+                        // Allow editing when clicked
+                        eventLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+                            public void mouseClicked(java.awt.event.MouseEvent e) {
+                                openEventDialog(newEventTitle, eventTime, eventDescription, eventPanel.getComponentCount() - 1);
+                            }
+                        });
+
+                        eventPanel.add(eventLabel);  // Add event label to the eventPanel
+                    }
+
+                    eventPanel.revalidate();
+                    eventPanel.repaint();
+                    ((JDialog) SwingUtilities.getWindowAncestor(panel)).dispose();
                 } else {
-                    // Create new event label if it's a new event
-                    JLabel eventLabel = new JLabel(eventDetails);
-                    eventLabel.setOpaque(true);
-                    eventLabel.setBackground(new Color(211, 151, 248));
-                    eventLabel.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));  // Add border around label
-                    eventLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-                    // Allow editing when clicked
-                    eventLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-                        public void mouseClicked(java.awt.event.MouseEvent e) {
-                            openEventDialog(newEventTitle, eventTime, eventDescription, eventPanel.getComponentCount() - 1);
-                        }
-                    });
-
-                    eventPanel.add(eventLabel);  // Add event label to the eventPanel
+                    JOptionPane.showMessageDialog(panel, "Please enter a valid time in HH:mm format.", "Invalid Time", JOptionPane.ERROR_MESSAGE);
                 }
-
-                eventPanel.revalidate();
-                eventPanel.repaint();
-            } else {
-                JOptionPane.showMessageDialog(this, "Please enter a valid time in HH:mm format.", "Invalid Time", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ((JDialog) SwingUtilities.getWindowAncestor(panel)).dispose();
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (indexToEdit != -1) {
+                    // Remove the event label if it's an edit
+                    eventPanel.remove(indexToEdit);
+                    eventPanel.revalidate();
+                    eventPanel.repaint();
+                }
+                ((JDialog) SwingUtilities.getWindowAncestor(panel)).dispose();
+            }
+        });
+
+        // Show dialog with buttons
+        JPanel dialogPanel = new JPanel(new BorderLayout());
+        dialogPanel.add(panel, BorderLayout.CENTER);
+        dialogPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        JDialog eventDialog = new JDialog((Frame) null, "Add/Edit Event", true);
+        eventDialog.setContentPane(dialogPanel);
+        eventDialog.pack();
+        eventDialog.setLocationRelativeTo(this);
+        eventDialog.setVisible(true);
     }
 
     // Helper method to add label and field to the dialog
